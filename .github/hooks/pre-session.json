@@ -1,0 +1,10 @@
+[
+  {
+    "run": "if ! command -v flutter &>/dev/null; then echo 'ERROR: Flutter SDK is not installed. Install Flutter 3.x to work on hub_ios.'; exit 1; fi",
+    "description": "Verify Flutter SDK is installed"
+  },
+  {
+    "run": "if ! command -v xcodebuild &>/dev/null; then echo 'WARNING: Xcode command line tools not found. Install Xcode and xcode-select --install for iOS builds.'; fi",
+    "description": "Verify Xcode command line tools"
+  }
+]

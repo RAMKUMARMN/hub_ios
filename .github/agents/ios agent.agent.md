@@ -1,6 +1,15 @@
 ---
 name: "ios-agent"
 description: "Describe what this custom agent does and when to use it."
+hooks:
+  PreSession:
+    - type: command
+      command: "if ! command -v flutter &>/dev/null; then echo 'ERROR: Flutter SDK not installed.'; exit 1; fi"
+    - type: command
+      command: "if ! command -v xcodebuild &>/dev/null; then echo 'WARNING: Xcode tools not found.'; fi"
+  PostCommand:
+    - type: command
+      command: "echo \"[$(date -u +'%Y-%m-%dT%H:%M:%SZ')] exit=$1 | $2\" >> /tmp/ios-agent.log"
 ---
 This custom "ios agent" assists contributors and maintainers working in this repo with iOS build configuration, Flutter integration, and platform-specific tasks for the `hub_ios` module. It acts as a focused, safety-first helper for authoring, reviewing, validating, and documenting changes to the iOS project files.
 
