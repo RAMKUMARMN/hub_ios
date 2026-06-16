@@ -1,0 +1,10 @@
+[
+  {
+    "run": "rm -f /tmp/ios-hook-*.tmp; echo 'Cleaned up temp files.'",
+    "description": "Remove temporary files created during session"
+  },
+  {
+    "run": "if [ -f /tmp/ios-agent-session.log ]; then echo \"Session log: /tmp/ios-agent-session.log\"; fi",
+    "description": "Report session log location"
+  }
+]
