@@ -1,0 +1,24 @@
+{
+  "name": "mcp_hub_ios",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/server.js",
+   "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node src/server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}
