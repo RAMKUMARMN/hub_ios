@@ -1,0 +1,20 @@
+{
+  "id": "cixio.ios.hooks.tsFormat",
+  "name": "TypeScript Prettier Sync",
+  "event": "PostToolUse",
+  "action": {
+    "type": "shellExecution",
+    "command": "npx",
+    "args": [
+      "prettier",
+      "--write",
+      "mcp_hub_ios/src/"
+    ],
+    "options": {
+      "env": {
+        "TARGET_FILE": "${activeEditorFile}"
+      }
+    }
+  },
+  "timeout": 10000
+}
