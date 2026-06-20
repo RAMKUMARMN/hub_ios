@@ -1,0 +1,10 @@
+{
+    "id":  "discover-project-files",
+    "name":  "discover-project-files",
+    "type":  "skill",
+    "repository":  "hub_ios",
+    "enabled":  true,
+    "version":  "1.0.0",
+    "mcp_server":  "mcp_hub_ios",
+    "tool":  "discoverProjectFiles"
+}
