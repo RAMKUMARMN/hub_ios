@@ -1,0 +1,10 @@
+{
+    "id": "trace-ios-features",
+    "name": "trace-ios-features",
+    "type": "skill",
+    "repository": "hub_ios",
+    "enabled": true,
+    "version": "1.0.0",
+    "mcp_server": "",
+    "tool": ""
+}
