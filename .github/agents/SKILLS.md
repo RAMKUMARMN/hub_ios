@@ -42,6 +42,26 @@ This document describes the skills, inputs/outputs, tools, safety constraints, a
 - Code signing with confirmation gates
 - Artifact upload and Slack notifications
 
+### Capabilities & Entitlements (handled by `ios-capabilities` agent)
+- Audit Xcode project capabilities against feature requirements
+- Validate entitlements file key-value pairs
+- Detect Bundle ID and provisioning profile conflicts
+- Provide exact XML snippets to resolve entitlement gaps
+
+### Deep Link Configuration (handled by `ios-deeplinks` agent)
+- Audit AASA file parity with Associated Domains entitlement
+- Cross-reference URL Schemes against Flutter route definitions
+- Detect route path drift when new GoRouter paths are added
+- Verify CDN reachability for each Associated Domain
+- Flag entitlement vs. Xcode capability inconsistencies
+
+### CI Environment Audit (handled by `ios-ci-env` agent)
+- Verify deployment target consistency (project / Podfile / CI / Fastlane)
+- Check CI base image and Xcode version compatibility
+- Detect permission test coverage gaps for new Info.plist keys
+- Flag dependency version conflicts with deployment target
+- Identify secrets and configuration drift between CI and project
+
 ### Infrastructure Skills (reusable guides in `.agents/skills/`)
 - `ios-xcode-setup` — Xcode project configuration
 - `ios-push-setup` — APNs and Universal Link setup
@@ -104,12 +124,14 @@ This document describes the skills, inputs/outputs, tools, safety constraints, a
 The coordinator (`ios-agent`) routes to single-task agents:
 
 | Agent | Responsibility |
-|---|---|
+|---|---|---|
 | `ios-xcode` | Xcode project configuration |
 | `ios-push` | APNs push notifications and Universal Links |
 | `ios-platform` | iOS permissions and platform features |
 | `ios-ci` | CI workflows for iOS builds |
-| `ios-planner` | Implementation planning |
+| `ios-capabilities` | Capabilities & entitlements audit |
+| `ios-deeplinks` | Deep link configuration audit |
+| `ios-ci-env` | CI environment drift audit |
 | `ios-code-reviewer` | Code review before merge |
 
 ## How progress is reported

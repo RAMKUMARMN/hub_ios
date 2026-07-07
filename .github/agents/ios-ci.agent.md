@@ -23,7 +23,7 @@ This agent does NOT handle:
 - Xcode project settings or code signing configuration → use `ios-xcode`
 - APNs push notifications → use `ios-push`
 - Platform permissions or features → use `ios-platform`
-- Planning or review → use `ios-planner` or `ios-code-reviewer`
+- Review → use `ios-code-reviewer`
 
 ## Inputs
 

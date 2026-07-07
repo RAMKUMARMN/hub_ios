@@ -42,7 +42,6 @@ This repository uses the following agents:
 | `ios-push` | `.github/agents/ios-push.agent.md` | APNs push notifications and Universal Links |
 | `ios-platform` | `.github/agents/ios-platform.agent.md` | iOS permissions and platform features |
 | `ios-ci` | `.github/agents/ios-ci.agent.md` | CI workflows for iOS builds |
-| `ios-planner` | `.github/agents/ios-planner.agent.md` | Implementation planning |
 | `ios-code-reviewer` | `.github/agents/ios-code-reviewer.agent.md` | Code review before merge |
 
 Prompts are in `.github/prompts/` and skills in `.agents/skills/`.

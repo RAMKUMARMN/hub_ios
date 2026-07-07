@@ -25,7 +25,7 @@ This agent does NOT handle:
 - Universal Links configuration → use `ios-push`
 - iOS permissions, offline caching → use `ios-platform`
 - CI workflow YAML → use `ios-ci`
-- Planning or review → use `ios-planner` or `ios-code-reviewer`
+- Review → use `ios-code-reviewer`
 
 ## Inputs
 

@@ -23,7 +23,7 @@ This agent does NOT handle:
 - Xcode project settings or build configuration → use `ios-xcode`
 - iOS permissions beyond push notification capability → use `ios-platform`
 - CI workflow YAML → use `ios-ci`
-- Planning or review → use `ios-planner` or `ios-code-reviewer`
+- Review → use `ios-code-reviewer`
 
 ## Inputs
 
