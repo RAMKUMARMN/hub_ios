@@ -1,6 +1,7 @@
 ---
 applyTo: "**/*.swift,**/*.plist,**/*.xcconfig,**/*.entitlements"
 ---
+
 # Project coding standards for iOS (Flutter build config)
 
 Apply the [general coding guidelines](./general-coding.instructions.md) to all code.
@@ -29,3 +30,24 @@ Apply the [general coding guidelines](./general-coding.instructions.md) to all c
 - Distribution: manual signing via CI using exported certificate + provisioning profile
 - Certificates and profiles stored as base64 in GitHub Secrets
 - Never commit `.p12` or `.mobileprovision` files to the repository
+
+## Agent Guidelines
+
+This repository uses the following agents:
+
+| Agent | File | Purpose |
+|---|---|---|
+| `ios-agent` | `.github/agents/ios-agent.agent.md` | Coordinator — routes to single-task agents |
+| `ios-xcode` | `.github/agents/ios-xcode.agent.md` | Xcode project configuration |
+| `ios-push` | `.github/agents/ios-push.agent.md` | APNs push notifications and Universal Links |
+| `ios-platform` | `.github/agents/ios-platform.agent.md` | iOS permissions and platform features |
+| `ios-ci` | `.github/agents/ios-ci.agent.md` | CI workflows for iOS builds |
+| `ios-code-reviewer` | `.github/agents/ios-code-reviewer.agent.md` | Code review before merge |
+
+Prompts are in `.github/prompts/` and skills in `.agents/skills/`.
+
+When asking for help, prefix your request with the agent name:
+- "@ios-xcode Update deployment target to iOS 17"
+- "@ios-push Verify APNs setup for hub_ios"
+- "@ios-platform Add NSCameraUsageDescription to Info.plist"
+- "@ios-ci Create ios-build.yml workflow"

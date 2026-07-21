@@ -1,82 +1,150 @@
 ---
 name: ios-agent-skills
-description: Skills for the `hub_ios` assistant: Xcode build configuration, Flutter iOS integration, APNs setup, Universal Links, offline caching, provisioning profiles, and safe build management. The agent helps maintainers set up and manage iOS project configuration in the repository, with a strong emphasis on safety and human oversight for release-signing actions.
+description: Skills for the `hub_ios` assistant: Xcode build configuration, APNs push notifications, Universal Links, platform permissions, offline caching, and safe build management. The coordinator routes requests to single-task agents.
 ---
+
 # iOS Agent — Skills Catalog
 
-This document describes the skills, inputs/outputs, tools, safety constraints, and example prompts the `ios-agent` (see `ios agent.agent.md`) supports for the `hub_ios` repository.
+This document describes the skills, inputs/outputs, tools, safety constraints, and example prompts the `ios-agent` (see `ios-agent.agent.md`) supports for the `hub_ios` repository.
 
 **Purpose**
 - Provide a compact, discoverable list of the agent's actionable capabilities so maintainers can quickly know what to ask and what to expect.
 
 **Quick summary**
-- **Primary domain:** iOS build configuration (Xcode via Flutter), APNs push notifications, Universal Links, offline caching, camera/gallery permissions.
-- **Primary outputs:** repository patches/diffs, GitHub Actions workflow files, CI job templates, README snippets, and PR-ready descriptions.
+- **Primary domain:** iOS build configuration (Xcode via Flutter), APNs push notifications, Universal Links, platform permissions, offline caching, CI workflows.
+- **Primary outputs:** repository patches/diffs, Xcode project file changes, Info.plist updates, GitHub Actions workflow files, and PR-ready descriptions.
 - **Primary safety posture:** Prepare and validate build configuration; never autonomously sign or publish release builds without explicit maintainer confirmation.
 
 ## Capabilities
 
-- Generate or update GitHub Actions workflows to run `flutter analyze`, `flutter test`, `flutter build ios --no-codesign`, and (when authorized) `flutter build ipa`.
-- Configure Xcode project settings (deployment target, capabilities, Info.plist keys).
-- Configure APNs push notifications via Firebase Cloud Messaging or AWS SNS.
-- Configure Universal Links (iOS deep linking) with apple-app-site-association.
-- Produce repository patches via `apply_patch` (small, focused edits) and provide diffs for review before applying.
-- Run static checks in CI: `flutter analyze`, `xcodebuild analyze`.
-- Draft PR descriptions, risk notes, and post-build verification checklists.
-- Create a safe release build and signing job template guarded by typed confirmation and restricted to manual dispatch.
+### Xcode Build Configuration (handled by `ios-xcode` agent)
+- Configure deployment target and build settings
+- Set up code signing with certificates and provisioning profiles
+- Enable capabilities (Push Notifications, Background Modes)
+- Manage Info.plist keys and URL schemes
+- Configure CocoaPods dependencies
+
+### Push Notifications & Universal Links (handled by `ios-push` agent)
+- APNs push notification setup
+- Firebase Cloud Messaging integration for iOS
+- Universal Links configuration
+- apple-app-site-association file generation
+
+### Platform Features & Permissions (handled by `ios-platform` agent)
+- Info.plist usage description keys
+- Entitlements configuration
+- Offline caching (Hive, shared_preferences)
+- Background modes and app groups
+
+### CI Workflows (handled by `ios-ci` agent)
+- Flutter analyze, test, and build jobs
+- CocoaPods and Flutter dependency caching
+- Code signing with confirmation gates
+- Artifact upload and Slack notifications
+
+### Capabilities & Entitlements (handled by `ios-capabilities` agent)
+- Audit Xcode project capabilities against feature requirements
+- Validate entitlements file key-value pairs
+- Detect Bundle ID and provisioning profile conflicts
+- Provide exact XML snippets to resolve entitlement gaps
+
+### Deep Link Configuration (handled by `ios-deeplinks` agent)
+- Audit AASA file parity with Associated Domains entitlement
+- Cross-reference URL Schemes against Flutter route definitions
+- Detect route path drift when new GoRouter paths are added
+- Verify CDN reachability for each Associated Domain
+- Flag entitlement vs. Xcode capability inconsistencies
+
+### CI Environment Audit (handled by `ios-ci-env` agent)
+- Verify deployment target consistency (project / Podfile / CI / Fastlane)
+- Check CI base image and Xcode version compatibility
+- Detect permission test coverage gaps for new Info.plist keys
+- Flag dependency version conflicts with deployment target
+- Identify secrets and configuration drift between CI and project
+
+### Infrastructure Skills (reusable guides in `.agents/skills/`)
+- `ios-xcode-setup` — Xcode project configuration
+- `ios-push-setup` — APNs and Universal Link setup
+- `ios-platform-setup` — iOS permissions and platform features
+- `ios-ci-workflow` — GitHub Actions CI workflow template
+- `ios-debug-build` — Build commands and troubleshooting
 
 ## Inputs the agent expects (ask if missing)
-- `build_configuration` -- which build configuration to target: `Debug`, `Release`.
-- `deployment_target` -- minimum iOS version (e.g., `16.0`).
-- `signing_config` -- repo secret names for `BUILD_CERTIFICATE_BASE64`, `BUILD_CERTIFICATE_PASSWORD`, `KEYCHAIN_PASSWORD`, `APPLE_TEAM_ID`, `PROVISIONING_PROFILE_BASE64`.
-- `apns_config` -- repo secret name for APNs key or certificate.
-- `notification` config -- repo secret name for `SLACK_WEBHOOK_URL` or `NOTIFICATION_EMAIL`.
+- `deployment_target` — minimum iOS version (e.g., 16.0)
+- `build_configuration` — Debug or Release
+- `signing_config` — secret names for certificates and provisioning profiles
+- `apns_config` — APNs key ID, team ID
+- `universal_link_domain` — domain for Universal Links
+- `permissions` — list of Info.plist usage description keys
 
 ## Outputs the agent produces
-- New or modified workflow YAML files in `/.github/workflows/` (e.g., `ios-build.yml`).
-- README/docs snippets describing required secrets and how to run the workflow.
-- PR-ready changelog/summary and verification checklist.
-- Patches (diffs) applied with `apply_patch` when given explicit permission.
+- New or modified Xcode project settings
+- Info.plist and entitlements updates
+- APNs configuration and Universal Link setup
+- CI workflow YAML files in `/.github/workflows/`
+- README/docs snippets describing required secrets
+- PR-ready changelog/summary and verification checklist
 
 ## Tools the agent uses
-- `apply_patch` -- create or update repo files (used only after human confirmation for impactful changes).
-- `read_file`, `file_search`, `grep_search` -- inspect repo layout and find Xcode or config files.
-- `manage_todo_list` -- track multi-step tasks and report progress back to the maintainer.
-- `run_in_terminal` -- only if explicitly requested; otherwise the agent outputs commands for maintainers to run locally or in CI.
+- Repository editing tools for making focused edits
+- File search and read tools to inspect repo layout
+- Progress tracking tools to manage multi-step tasks
 
 ## Safety, boundaries, and policies
 
-- Never request or accept raw secrets in chat messages. Instead, the agent asks for secret *names* (e.g., `BUILD_CERTIFICATE_BASE64`, `APPLE_TEAM_ID`) and instructs maintainers to set them in GitHub Secrets.
-- Never perform release signing or App Store upload without an explicit confirmation token: `CONFIRM_RELEASE_SIGNING` (maintainer must provide this token before the agent takes any action that would modify release signing configs or automated build steps).
+- Never request or accept raw secrets in chat messages. Instead, ask for secret *names* (e.g., `BUILD_CERTIFICATE_BASE64`, `APPLE_TEAM_ID`) and instruct maintainers to set them in GitHub Secrets.
+- Never perform release signing or App Store upload without an explicit confirmation token: `CONFIRM_RELEASE_SIGNING`.
 - No direct App Store Connect API operations.
-- No automatic PR merging or repo-level approvals -- the agent drafts, explains, and optionally creates patches/PRs after explicit permission.
+- No automatic PR merging or repo-level approvals — draft and explain only.
 
 ## Confirmation and escalation rules
-- Low-risk edits (formatting, docs, dependency version bumps): agent may apply patches after a single maintainer approval.
-- Medium-risk edits (build config changes, new capabilities, Info.plist changes): require an explicit approval message before applying patches.
-- High-risk edits (changes that enable or run release signing, alter provisioning profiles, or modify App Store submission steps): require the typed confirmation `CONFIRM_RELEASE_SIGNING` and a second acknowledgment (e.g., "I understand this will produce a signed release artifact").
+- Low-risk edits (formatting, docs, dependency version bumps): apply patches after a single maintainer approval.
+- Medium-risk edits (build config changes, new capabilities, Info.plist changes): require explicit approval before applying.
+- High-risk edits (changes that enable or run release signing, alter provisioning profiles): require `CONFIRM_RELEASE_SIGNING` and a second acknowledgment.
 
 ## Example prompts (how to ask the agent)
-- "Create an `ios-build.yml` workflow that supports `Debug` and `Release` configurations; require approval for release signing; post results to Slack via `SLACK_WEBHOOK_URL`."
-- "Add the `Push Notifications` and `Background Modes` capabilities to the Xcode project -- show me the patch before applying."
-- "Draft a release build workflow that requires typed confirmation `CONFIRM_RELEASE_SIGNING` and logs the operator who invoked it."
 
-## Typical workflows the agent supports
+### Xcode Build
+- "Update the deployment target in the Xcode project to iOS 17."
+- "Enable the Push Notifications capability in the Xcode project."
 
-1. Discovery: scan repo for `ios/`, `pubspec.yaml`, Xcode project files, and existing config.
-2. Draft: create a draft build workflow with `analyze`, `test`, `build` stages.
-3. Review: produce a PR description, risk summary, and required secrets docs.
-4. Apply (human-gated): upon confirmation, the agent can apply small, non-release patches or add CI steps; release builds require `CONFIRM_RELEASE_SIGNING`.
+### Push Notifications
+- "Verify the APNs push notification setup for hub_ios."
+- "Configure Universal Links for app.hub.example.com."
 
-## Error handling & troubleshooting behavior
-- If `flutter analyze` or `xcodebuild` fails, the agent returns a concise diagnostics summary and suggests fixes.
-- If `flutter build ios` shows provisioning or signing errors, the agent highlights them, explains likely causes, and recommends fixes.
+### Platform Features
+- "Add NSCameraUsageDescription and NSPhotoLibraryUsageDescription to Info.plist."
+- "Configure Hive for offline caching."
+
+### CI Workflows
+- "Create an ios-build.yml workflow with analyze, test, and build-ios jobs for simulator."
+
+## Agent Architecture
+
+The coordinator (`ios-agent`) routes to single-task agents:
+
+| Agent | Responsibility |
+|---|---|---|
+| `ios-xcode` | Xcode project configuration |
+| `ios-push` | APNs push notifications and Universal Links |
+| `ios-platform` | iOS permissions and platform features |
+| `ios-ci` | CI workflows for iOS builds |
+| `ios-capabilities` | Capabilities & entitlements audit |
+| `ios-deeplinks` | Deep link configuration audit |
+| `ios-ci-env` | CI environment drift audit |
+| `ios-code-reviewer` | Code review before merge |
 
 ## How progress is reported
-- The agent uses `manage_todo_list` to break tasks into steps (discover -> draft -> patch -> verify) and will report the current step and completed steps in chat messages.
+- Each agent breaks tasks into steps and reports current/completed steps
 
-## Where to find the agent's configuration and prompts
-- Agent behavior is documented in `/.github/agents/ios agent.agent.md` and the repository prompt lives at `/.github/prompts/ios-prompt.prompt.md`.
+## Where to find configuration
+- Agent configs: `/.github/agents/*.agent.md`
+- Prompts: `/.github/prompts/*.prompt.md`
+- Skills: `/.agents/skills/*/SKILL.md`
+- Hooks: `/.github/hooks/*.json`
+- General guidelines: `/.github/copilot-instructions.md`
 
 ## Maintenance notes
-- Keep `SKILLS.md` aligned with `ios agent.agent.md` and `ios-prompt.prompt.md` -- update all three when adding new capabilities (for example, support for a new test harness or a different CI platform).
+- Keep `SKILLS.md` aligned with individual agent files and prompts
+- When adding a new skill, create `/.agents/skills/<name>/SKILL.md` and update this catalog
+- When adding a new single-task agent, create the agent file, prompt file, register it in the coordinator's handoffs, and add to `opencode.jsonc`
